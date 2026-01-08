@@ -5,63 +5,117 @@
 <title>World Explorer Game</title>
 <style>
     body {
-        font-family: Arial, sans-serif;
-        background: #0f172a;
-        color: #e5e7eb;
+        font-family: 'Comic Sans MS', Arial, sans-serif;
+        background: #f9f9f9;
+        color: #1f2937;
         margin: 0;
         padding: 0;
     }
+
     header {
         text-align: center;
-        padding: 20px;
-        background: #020617;
-        font-size: 28px;
+        padding: 25px;
+        background: #60a5fa;
+        color: white;
+        font-size: 32px;
         font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
+
     .buttons {
         display: flex;
         justify-content: center;
         gap: 20px;
         margin: 20px;
     }
+
     button {
         padding: 15px 30px;
         font-size: 18px;
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         cursor: pointer;
+        transition: transform 0.2s;
     }
+
+    button:hover {
+        transform: scale(1.05);
+    }
+
     .lockin {
-        background: #2563eb;
+        background: #3b82f6;
         color: white;
     }
+
     .quiz {
-        background: #16a34a;
+        background: #10b981;
         color: white;
     }
+
     .container {
-        max-width: 900px;
+        max-width: 1000px;
         margin: auto;
         padding: 20px;
     }
+
     h2 {
         margin-top: 30px;
-        border-bottom: 1px solid #334155;
         padding-bottom: 5px;
+        border-bottom: 2px solid #d1d5db;
+        font-size: 24px;
+        color: #111827;
     }
+
+    .qa-item {
+        margin: 12px 0;
+        background: #e5e7eb;
+        padding: 12px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .qa-item:hover {
+        background: #d1d5db;
+    }
+
+    .answer {
+        display: none;
+        margin-top: 6px;
+        padding-left: 10px;
+        color: #065f46;
+        font-weight: bold;
+    }
+
+    /* Quiz options */
     .quiz-option {
         display: block;
         padding: 12px;
         margin: 10px 0;
-        background: #1e293b;
-        border-radius: 6px;
+        background: #f3f4f6;
+        border-radius: 8px;
         cursor: pointer;
+        transition: background 0.2s;
     }
+
+    .quiz-option:hover {
+        background: #dbeafe;
+    }
+
     .quiz-option.correct {
-        background: #166534;
+        background: #34d399;
+        color: white;
     }
+
     .quiz-option.wrong {
-        background: #7f1d1d;
+        background: #ef4444;
+        color: white;
+    }
+
+    .score {
+        margin-top: 15px;
+        font-size: 18px;
+        font-weight: bold;
     }
 </style>
 </head>
@@ -71,77 +125,97 @@
 <header>🌍 World Explorer – Learn & Quiz</header>
 
 <div class="buttons">
-    <button class="lockin" onclick="showLockIn()">🔒 Lock In</button>
-    <button class="quiz" onclick="startQuiz()">🎯 Quizzz</button>
+    <button class="lockin" onclick="showLockIn()">📘 Learn</button>
+    <button class="quiz" onclick="startQuiz()">🎯 Quiz</button>
 </div>
 
 <div class="container" id="content"></div>
 
 <script>
 // =====================
-// KNOWLEDGE DATABASE
+// KNOWLEDGE DATABASE (All Q&A)
 // =====================
 const knowledge = {
     continents: [
-        "There are 7 continents in the world.",
-        "Asia is the largest continent.",
-        "Australia is the smallest continent.",
-        "Africa has the most countries.",
-        "Antarctica has no permanent population."
+        {q: "How many continents are there in the world?", a: "7"},
+        {q: "Name all the continents of the world.", a: "Asia, Africa, North America, South America, Antarctica, Europe, Australia"},
+        {q: "Which is the largest continent by area?", a: "Asia"},
+        {q: "Which is the smallest continent by area?", a: "Australia"},
+        {q: "Which continent has the most countries?", a: "Africa"},
+        {q: "Which continent has no permanent population?", a: "Antarctica"},
+        {q: "Which continent is known as the 'Island Continent'?", a: "Australia"}
     ],
     countries: [
-        "There are 193 UN-recognized countries.",
-        "India is the most populous country.",
-        "Russia is the largest country by area.",
-        "Vatican City is the smallest country.",
-        "South Sudan is the newest country."
+        {q: "How many UN-recognized countries are there in the world?", a: "193"},
+        {q: "Which is the most populous country in the world?", a: "India"},
+        {q: "Which is the largest country by area?", a: "Russia"},
+        {q: "Which is the smallest country in the world?", a: "Vatican City"},
+        {q: "Which is the newest country in the world?", a: "South Sudan"},
+        {q: "Name any five countries in Europe.", a: "France, Germany, Italy, Spain, United Kingdom"},
+        {q: "Which country has the highest population density?", a: "Monaco"}
     ],
     capitals: [
-        "Capital of India is New Delhi.",
-        "Capital of USA is Washington, D.C.",
-        "Capital of Australia is Canberra.",
-        "Capital of Japan is Tokyo.",
-        "Capital of France is Paris."
+        {q: "What is the capital of Afghanistan?", a: "Kabul"},
+        {q: "What is the capital of India?", a: "New Delhi"},
+        {q: "What is the capital of United States?", a: "Washington, D.C."},
+        {q: "What is the capital of Australia?", a: "Canberra"},
+        {q: "What is the capital of Japan?", a: "Tokyo"},
+        {q: "What is the capital of France?", a: "Paris"},
+        {q: "What is the capital of Russia?", a: "Moscow"},
+        {q: "What is the capital of South Africa?", a: "Pretoria / Bloemfontein / Cape Town"},
+        // ... You can continue adding all 193 countries in similar format
     ],
     indiaHistory: [
-        "First Prime Minister of India was Jawaharlal Nehru.",
-        "First President of India was Dr. Rajendra Prasad.",
-        "Indian Constitution came into force on 26 January 1950.",
-        "Father of the Indian Constitution is Dr. B. R. Ambedkar.",
-        "First War of Independence happened in 1857."
+        {q: "Who was the first Prime Minister of India?", a: "Jawaharlal Nehru"},
+        {q: "Who was the first President of India?", a: "Dr. Rajendra Prasad"},
+        {q: "When did the Indian Constitution come into force?", a: "26 January 1950"},
+        {q: "Who is known as the Father of the Indian Constitution?", a: "Dr. B. R. Ambedkar"},
+        {q: "When did the First War of Indian Independence happen?", a: "1857"},
+        {q: "Who was the first woman President of India?", a: "Pratibha Patil"},
+        {q: "Who led the Salt March?", a: "Mahatma Gandhi"}
     ],
     worldFacts: [
-        "First man on the Moon was Neil Armstrong.",
-        "First woman Prime Minister in the world was Sirimavo Bandaranaike.",
-        "Largest desert in the world is Antarctica.",
-        "Longest river is the Nile.",
-        "Highest mountain is Mount Everest."
+        {q: "Who was the first man on the Moon?", a: "Neil Armstrong"},
+        {q: "Who was the first woman Prime Minister in the world?", a: "Sirimavo Bandaranaike"},
+        {q: "Which is the largest desert in the world?", a: "Antarctica"},
+        {q: "Which is the longest river in the world?", a: "Nile"},
+        {q: "Which is the highest mountain in the world?", a: "Mount Everest"},
+        {q: "Which country is known as the Land of the Rising Sun?", a: "Japan"},
+        {q: "Who invented the telephone?", a: "Alexander Graham Bell"}
+    ],
+    generalAwareness: [
+        {q: "Who is the current Secretary-General of the United Nations?", a: "António Guterres"},
+        {q: "Which country has the largest democracy in the world?", a: "India"},
+        {q: "Who is known as the Iron Lady of India?", a: "Indira Gandhi"},
+        {q: "Who developed the theory of relativity?", a: "Albert Einstein"},
+        {q: "What is the chemical symbol for gold?", a: "Au"},
+        {q: "What is the hardest natural substance on Earth?", a: "Diamond"},
+        {q: "Which planet is known as the Red Planet?", a: "Mars"},
+        {q: "Who won the Nobel Peace Prize in 2023?", a: "Narges Mohammadi"},
+        {q: "Which country won the FIFA World Cup in 2022?", a: "Argentina"},
+        {q: "Which is the largest ocean in the world?", a: "Pacific Ocean"},
+        {q: "Which language has the most native speakers in the world?", a: "Mandarin Chinese"},
+        {q: "What is the currency of Japan?", a: "Yen"},
+        {q: "Which is the fastest land animal in the world?", a: "Cheetah"}
     ]
 };
 
 // =====================
-// LOCK IN MODE
+// LOCK-IN LEARN MODE
 // =====================
 function showLockIn() {
     const content = document.getElementById("content");
-    content.innerHTML = `
-        <h2>📘 Lock In – Learn at Your Own Pace</h2>
-
-        <h2>🌍 Continents</h2>
-        ${knowledge.continents.map(item => `<p>• ${item}</p>`).join("")}
-
-        <h2>🏳️ Countries</h2>
-        ${knowledge.countries.map(item => `<p>• ${item}</p>`).join("")}
-
-        <h2>🏛 Capitals</h2>
-        ${knowledge.capitals.map(item => `<p>• ${item}</p>`).join("")}
-
-        <h2>🇮🇳 India – History</h2>
-        ${knowledge.indiaHistory.map(item => `<p>• ${item}</p>`).join("")}
-
-        <h2>🌐 World Facts</h2>
-        ${knowledge.worldFacts.map(item => `<p>• ${item}</p>`).join("")}
-    `;
+    content.innerHTML = "";
+    for (let category in knowledge) {
+        let section = `<h2>${category.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</h2>`;
+        knowledge[category].forEach(item => {
+            section += `<div class="qa-item" onclick="this.querySelector('.answer').style.display = this.querySelector('.answer').style.display==='block'?'none':'block'">
+                Q: ${item.q}
+                <div class="answer">A: ${item.a}</div>
+            </div>`;
+        });
+        content.innerHTML += section;
+    }
 }
 
 // =====================
@@ -152,14 +226,11 @@ let current = 0;
 let score = 0;
 
 function generateQuizQuestions() {
-    quizQuestions = [
-        { q: "How many continents are there?", a: "7", options: ["5", "6", "7", "8"] },
-        { q: "Largest continent?", a: "Asia", options: ["Africa", "Europe", "Asia", "Australia"] },
-        { q: "Capital of India?", a: "New Delhi", options: ["Mumbai", "Delhi", "New Delhi", "Kolkata"] },
-        { q: "First Prime Minister of India?", a: "Jawaharlal Nehru", options: ["Gandhi", "Nehru", "Patel", "Bose"] },
-        { q: "Highest mountain?", a: "Mount Everest", options: ["K2", "Everest", "Kilimanjaro", "Denali"] }
-    ];
-
+    quizQuestions = [];
+    for (let cat in knowledge) {
+        quizQuestions = quizQuestions.concat(knowledge[cat]);
+    }
+    // Shuffle questions
     quizQuestions.sort(() => Math.random() - 0.5);
 }
 
@@ -174,28 +245,30 @@ function showQuestion() {
     const q = quizQuestions[current];
     const content = document.getElementById("content");
 
+    // Generate multiple-choice options (1 correct + 3 random)
+    let options = [q.a];
+    while (options.length < 4) {
+        let randomQ = quizQuestions[Math.floor(Math.random() * quizQuestions.length)].a;
+        if (!options.includes(randomQ)) options.push(randomQ);
+    }
+    options.sort(() => Math.random() - 0.5);
+
     content.innerHTML = `
         <h2>❓ Question ${current + 1}</h2>
         <p>${q.q}</p>
-        ${q.options.map(opt => `
-            <div class="quiz-option" onclick="checkAnswer(this, '${opt}')">
-                ${opt}
-            </div>
-        `).join("")}
-        <p>Score: ${score}</p>
+        ${options.map(opt => `<div class="quiz-option" onclick="checkAnswer(this,'${opt}','${q.a}')">${opt}</div>`).join('')}
+        <div class="score">Score: ${score}</div>
     `;
 }
 
-function checkAnswer(element, answer) {
-    const q = quizQuestions[current];
-
-    if (answer === q.a) {
+function checkAnswer(element, answer, correct) {
+    if (answer === correct) {
         element.classList.add("correct");
         score++;
     } else {
         element.classList.add("wrong");
     }
-
+    // Wait and show next question
     setTimeout(() => {
         current++;
         if (current < quizQuestions.length) {
@@ -211,9 +284,9 @@ function showResult() {
         <h2>🏆 Quiz Finished!</h2>
         <p>Your Score: ${score} / ${quizQuestions.length}</p>
         <button class="quiz" onclick="startQuiz()">🔄 Play Again</button>
+        <button class="lockin" onclick="showLockIn()">📘 Learn More</button>
     `;
 }
 </script>
-
 </body>
 </html>
