@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Muvi AVOD Revenue Calculator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial; margin: 30px; }
+    h1 { color: #5b2d8b; }
+    input { width: 120px; }
+    table { border-collapse: collapse; margin-top: 20px; }
+    td, th { border: 1px solid #ccc; padding: 6px; text-align: right; }
+    th { background: #f3f3f3; }
+    .grid { display: grid; grid-template-columns: 300px 1fr; gap: 40px; }
+  </style>
+</head>
+
+<body>
+
+<h1>Muvi AVOD Revenue Analysis (12 Months)</h1>
+
+<div class="grid">
+
+<!-- INPUTS -->
+<div>
+  <h3>Inputs</h3>
+
+  Total Users (Month 1)<br>
+  <input id="users" value="25000"><br><br>
+
+  Monthly User Growth<br>
+  <input id="growth" value="25000"><br><br>
+
+  Active User % (0.5 = 50%)<br>
+  <input id="active" value="0.5"><br><br>
+
+  Avg Watch Hours / User / Month<br>
+  <input id="hours" value="12"><br><br>
+
+  Ads Per Hour<br>
+  <input id="ads" value="4"><br><br>
+
+  CPM ($)<br>
+  <input id="cpm" value="5"><br><br>
+
+  Bandwidth Cost per GB ($)<br>
+  <input id="bwcost" value="0.09"><br><br>
+
+  GB per Streaming Hour<br>
+  <input id="gbph" value="1.5"><br><br>
+
+  Platform Fee / Month ($)<br>
+  <input id="platform" value="3900"><br><br>
+
+  App Fee / Month ($)<br>
+  <input id="apps" value="2994"><br><br>
+
+  <button onclick="calculate()">Calculate</button>
+</div>
+
+<!-- OUTPUT -->
+<div>
+  <canvas id="chart"></canvas>
+
+  <table id="result">
+    <thead>
+      <tr>
+        <th>Month</th>
+        <th>Total Users</th>
+        <th>Revenue ($)</th>
+        <th>Cost ($)</th>
+        <th>Profit ($)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+</div>
+
+<script>
+let chart;
+
+function calculate() {
+  const users = +document.getElementById("users").value;
+  const growth = +document.getElementById("growth").value;
+  const active = +document.getElementById("active").value;
+  const hours = +document.getElementById("hours").value;
+  const ads = +document.getElementById("ads").value;
+  const cpm = +document.getElementById("cpm").value;
+  const bwcost = +document.getElementById("bwcost").value;
+  const gbph = +document.getElementById("gbph").value;
+  const platform = +document.getElementById("platform").value;
+  const apps = +document.getElementById("apps").value;
+
+  const tbody = document.querySelector("#result tbody");
+  tbody.innerHTML = "";
+
+  let labels = [], revenueData = [], profitData = [];
+
+  for (let m = 1; m <= 12; m++) {
+    const totalUsers = users + (m - 1) * growth;
+    const activeUsers = totalUsers * active;
+    const watchHours = activeUsers * hours;
+    const impressions = watchHours * ads;
+
+    const revenue = (impressions / 1000) * cpm;
+    const bandwidth = watchHours * gbph * bwcost;
+    const cost = bandwidth + platform + apps;
+    const profit = revenue - cost;
+
+    labels.push("M" + m);
+    revenueData.push(Math.round(revenue));
+    profitData.push(Math.round(profit));
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${m}</td>
+        <td>${Math.round(totalUsers)}</td>
+        <td>${Math.round(revenue)}</td>
+        <td>${Math.round(cost)}</td>
+        <td>${Math.round(profit)}</td>
+      </tr>`;
+  }
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        { label: "Revenue", data: revenueData },
+        { label: "Profit", data: profitData }
+      ]
+    }
+  });
+}
+</script>
+
+</body>
+</html>
