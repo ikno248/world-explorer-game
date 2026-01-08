@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Explorer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: #020617;
+      padding: 24px;
+      border-radius: 16px;
+      width: 360px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+    .question {
+      font-size: 18px;
+      margin: 20px 0;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    .score {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #93c5fd;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🌍 World Explorer</h1>
+    <div class="question" id="question"></div>
+    <div id="answers"></div>
+    <div class="score" id="score"></div>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "Which continent is Brazil in?", a: "South America", options: ["Africa", "Europe", "South America", "Asia"] },
+      { q: "Which country has the capital Tokyo?", a: "Japan", options: ["China", "South Korea", "Japan", "Thailand"] },
+      { q: "Which continent is Germany in?", a: "Europe", options: ["Europe", "Asia", "Africa", "South America"] },
+      { q: "Which country is known as the Land of the Long White Cloud?", a: "New Zealand", options: ["Australia", "Iceland", "New Zealand", "Norway"] },
+      { q: "Which continent has the most countries?", a: "Africa", options: ["Asia", "Africa", "Europe", "South America"] }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById("question").innerText = q.q;
+      const answers = document.getElementById("answers");
+      answers.innerHTML = "";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.onclick = () => checkAnswer(option);
+        answers.appendChild(btn);
+      });
+
+      document.getElementById("score").innerText = `Score: ${score}/${questions.length}`;
+    }
+
+    function checkAnswer(answer) {
+      if (answer === questions[current].a) score++;
+      current++;
+
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        document.getElementById("question").innerText = "🎉 Game Over!";
+        document.getElementById("answers").innerHTML = `<p>Your final score: ${score}/${questions.length}</p>`;
+        document.getElementById("score").innerText = "Refresh the page to play again";
+      }
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
