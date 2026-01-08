@@ -1,107 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>World Explorer</title>
-  <style>
+<meta charset="UTF-8">
+<title>World Explorer Game</title>
+<style>
     body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+        font-family: Arial, sans-serif;
+        background: #0f172a;
+        color: #e5e7eb;
+        margin: 0;
+        padding: 0;
     }
-    .card {
-      background: #020617;
-      padding: 24px;
-      border-radius: 16px;
-      width: 360px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      text-align: center;
+    header {
+        text-align: center;
+        padding: 20px;
+        background: #020617;
+        font-size: 28px;
+        font-weight: bold;
     }
-    h1 {
-      font-size: 22px;
-      margin-bottom: 12px;
-    }
-    .question {
-      font-size: 18px;
-      margin: 20px 0;
+    .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin: 20px;
     }
     button {
-      display: block;
-      width: 100%;
-      margin: 8px 0;
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      background: #2563eb;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
+        padding: 15px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
     }
-    button:hover {
-      background: #1d4ed8;
+    .lockin {
+        background: #2563eb;
+        color: white;
     }
-    .score {
-      margin-top: 16px;
-      font-size: 14px;
-      color: #93c5fd;
+    .quiz {
+        background: #16a34a;
+        color: white;
     }
-  </style>
+    .container {
+        max-width: 900px;
+        margin: auto;
+        padding: 20px;
+    }
+    h2 {
+        margin-top: 30px;
+        border-bottom: 1px solid #334155;
+        padding-bottom: 5px;
+    }
+    .quiz-option {
+        display: block;
+        padding: 12px;
+        margin: 10px 0;
+        background: #1e293b;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    .quiz-option.correct {
+        background: #166534;
+    }
+    .quiz-option.wrong {
+        background: #7f1d1d;
+    }
+</style>
 </head>
-<body>
-  <div class="card">
-    <h1>🌍 World Explorer</h1>
-    <div class="question" id="question"></div>
-    <div id="answers"></div>
-    <div class="score" id="score"></div>
-  </div>
 
-  <script>
-    const questions = [
-      { q: "Which continent is Brazil in?", a: "South America", options: ["Africa", "Europe", "South America", "Asia"] },
-      { q: "Which country has the capital Tokyo?", a: "Japan", options: ["China", "South Korea", "Japan", "Thailand"] },
-      { q: "Which continent is Germany in?", a: "Europe", options: ["Europe", "Asia", "Africa", "South America"] },
-      { q: "Which country is known as the Land of the Long White Cloud?", a: "New Zealand", options: ["Australia", "Iceland", "New Zealand", "Norway"] },
-      { q: "Which continent has the most countries?", a: "Africa", options: ["Asia", "Africa", "Europe", "South America"] }
+<body>
+
+<header>🌍 World Explorer – Learn & Quiz</header>
+
+<div class="buttons">
+    <button class="lockin" onclick="showLockIn()">🔒 Lock In</button>
+    <button class="quiz" onclick="startQuiz()">🎯 Quizzz</button>
+</div>
+
+<div class="container" id="content"></div>
+
+<script>
+// =====================
+// KNOWLEDGE DATABASE
+// =====================
+const knowledge = {
+    continents: [
+        "There are 7 continents in the world.",
+        "Asia is the largest continent.",
+        "Australia is the smallest continent.",
+        "Africa has the most countries.",
+        "Antarctica has no permanent population."
+    ],
+    countries: [
+        "There are 193 UN-recognized countries.",
+        "India is the most populous country.",
+        "Russia is the largest country by area.",
+        "Vatican City is the smallest country.",
+        "South Sudan is the newest country."
+    ],
+    capitals: [
+        "Capital of India is New Delhi.",
+        "Capital of USA is Washington, D.C.",
+        "Capital of Australia is Canberra.",
+        "Capital of Japan is Tokyo.",
+        "Capital of France is Paris."
+    ],
+    indiaHistory: [
+        "First Prime Minister of India was Jawaharlal Nehru.",
+        "First President of India was Dr. Rajendra Prasad.",
+        "Indian Constitution came into force on 26 January 1950.",
+        "Father of the Indian Constitution is Dr. B. R. Ambedkar.",
+        "First War of Independence happened in 1857."
+    ],
+    worldFacts: [
+        "First man on the Moon was Neil Armstrong.",
+        "First woman Prime Minister in the world was Sirimavo Bandaranaike.",
+        "Largest desert in the world is Antarctica.",
+        "Longest river is the Nile.",
+        "Highest mountain is Mount Everest."
+    ]
+};
+
+// =====================
+// LOCK IN MODE
+// =====================
+function showLockIn() {
+    const content = document.getElementById("content");
+    content.innerHTML = `
+        <h2>📘 Lock In – Learn at Your Own Pace</h2>
+
+        <h2>🌍 Continents</h2>
+        ${knowledge.continents.map(item => `<p>• ${item}</p>`).join("")}
+
+        <h2>🏳️ Countries</h2>
+        ${knowledge.countries.map(item => `<p>• ${item}</p>`).join("")}
+
+        <h2>🏛 Capitals</h2>
+        ${knowledge.capitals.map(item => `<p>• ${item}</p>`).join("")}
+
+        <h2>🇮🇳 India – History</h2>
+        ${knowledge.indiaHistory.map(item => `<p>• ${item}</p>`).join("")}
+
+        <h2>🌐 World Facts</h2>
+        ${knowledge.worldFacts.map(item => `<p>• ${item}</p>`).join("")}
+    `;
+}
+
+// =====================
+// QUIZ MODE
+// =====================
+let quizQuestions = [];
+let current = 0;
+let score = 0;
+
+function generateQuizQuestions() {
+    quizQuestions = [
+        { q: "How many continents are there?", a: "7", options: ["5", "6", "7", "8"] },
+        { q: "Largest continent?", a: "Asia", options: ["Africa", "Europe", "Asia", "Australia"] },
+        { q: "Capital of India?", a: "New Delhi", options: ["Mumbai", "Delhi", "New Delhi", "Kolkata"] },
+        { q: "First Prime Minister of India?", a: "Jawaharlal Nehru", options: ["Gandhi", "Nehru", "Patel", "Bose"] },
+        { q: "Highest mountain?", a: "Mount Everest", options: ["K2", "Everest", "Kilimanjaro", "Denali"] }
     ];
 
-    let current = 0;
-    let score = 0;
+    quizQuestions.sort(() => Math.random() - 0.5);
+}
 
-    function loadQuestion() {
-      const q = questions[current];
-      document.getElementById("question").innerText = q.q;
-      const answers = document.getElementById("answers");
-      answers.innerHTML = "";
+function startQuiz() {
+    generateQuizQuestions();
+    current = 0;
+    score = 0;
+    showQuestion();
+}
 
-      q.options.forEach(option => {
-        const btn = document.createElement("button");
-        btn.innerText = option;
-        btn.onclick = () => checkAnswer(option);
-        answers.appendChild(btn);
-      });
+function showQuestion() {
+    const q = quizQuestions[current];
+    const content = document.getElementById("content");
 
-      document.getElementById("score").innerText = `Score: ${score}/${questions.length}`;
+    content.innerHTML = `
+        <h2>❓ Question ${current + 1}</h2>
+        <p>${q.q}</p>
+        ${q.options.map(opt => `
+            <div class="quiz-option" onclick="checkAnswer(this, '${opt}')">
+                ${opt}
+            </div>
+        `).join("")}
+        <p>Score: ${score}</p>
+    `;
+}
+
+function checkAnswer(element, answer) {
+    const q = quizQuestions[current];
+
+    if (answer === q.a) {
+        element.classList.add("correct");
+        score++;
+    } else {
+        element.classList.add("wrong");
     }
 
-    function checkAnswer(answer) {
-      if (answer === questions[current].a) score++;
-      current++;
+    setTimeout(() => {
+        current++;
+        if (current < quizQuestions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }, 800);
+}
 
-      if (current < questions.length) {
-        loadQuestion();
-      } else {
-        document.getElementById("question").innerText = "🎉 Game Over!";
-        document.getElementById("answers").innerHTML = `<p>Your final score: ${score}/${questions.length}</p>`;
-        document.getElementById("score").innerText = "Refresh the page to play again";
-      }
-    }
+function showResult() {
+    document.getElementById("content").innerHTML = `
+        <h2>🏆 Quiz Finished!</h2>
+        <p>Your Score: ${score} / ${quizQuestions.length}</p>
+        <button class="quiz" onclick="startQuiz()">🔄 Play Again</button>
+    `;
+}
+</script>
 
-    loadQuestion();
-  </script>
 </body>
 </html>
